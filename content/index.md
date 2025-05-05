@@ -19,5 +19,5 @@ Here's a schematic overview of the Software structure, which will make you famil
 
 ![VQH Software Structure](https://github.com/iccmr-quantum/VQH/assets/28213905/9a019a5c-7c76-4c5a-babe-7ebac7a162ce)
 
-To help with this documentation, or to contribute to VQH, please send an email to the current project manager, Paulo Itaborai - [paulo.itaborai@desy.de](mailto:paulo.itaborai@desy.de).
+To help with this documentation, or to contribute to VQH, please open a now issue on the github repo [Itaborala/VQH-Docs](/https://github.com/Itaborala/VQH-Docs)
 
