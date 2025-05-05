@@ -13,6 +13,8 @@ import {
   select,
   drag,
   zoom,
+  hsl,
+  color as d3Color,
 } from "d3"
 import { Text, Graphics, Application, Container, Circle } from "pixi.js"
 import { Group as TweenGroup, Tween as Tweened } from "@tweenjs/tween.js"
@@ -167,6 +169,32 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
     if (showTags) tags.forEach((tag) => neighbourhood.add(tag))
   }
 
+  /**
+   * FNV‑1a 32‑bit hash — fast, tiny, works in browsers
+   * https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+   */
+  const fnv1a = (str: string) => {
+    let h = 0x811c9dc5
+    for (let i = 0; i < str.length; i++) {
+      h ^= str.charCodeAt(i)
+      h = (h * 0x01000193) >>> 0
+    }
+    return h
+  }
+
+  /** Deterministic tag → hex colour */
+
+  const tagColour = (tag: string) => {
+    const hue = fnv1a(tag) % 360          // 0–359
+    return hsl(hue, 0.85, 0.55).formatHex()
+  }
+
+  /** Lighten a colour enough to mark “visited” nodes */
+  const tintVisited = (hex: string) => d3Color(hex)!.brighter(0.6).formatHex()
+
+
+
+
   const nodes = [...neighbourhood].map((url) => {
     const text = url.startsWith("tags/") ? "#" + url.substring(5) : (data.get(url)?.title ?? url)
     return {
@@ -219,14 +247,22 @@ async function renderGraph(graph: HTMLElement, fullSlug: FullSlug) {
 
   // calculate color
   const color = (d: NodeData) => {
-    const isCurrent = d.id === slug
-    if (isCurrent) {
-      return computedStyleMap["--secondary"]
-    } else if (visited.has(d.id) || d.id.startsWith("tags/")) {
-      return computedStyleMap["--tertiary"]
-    } else {
-      return computedStyleMap["--gray"]
+        // current page still gets --secondary
+    if (d.id === slug) return computedStyleMap["--secondary"]
+
+    // Tag page nodes
+    if (d.id.startsWith("tags/")) {
+      return tagColour(d.id.slice(5))
     }
+
+    // Regular notes: first tag decides
+    if (d.tags.length) {
+      const base = tagColour(d.tags[0])
+      return visited.has(d.id) ? tintVisited(base) : base
+    }
+
+    // Untagged → gray variable
+    return computedStyleMap["--gray"]
   }
 
   function nodeRadius(d: NodeData) {
