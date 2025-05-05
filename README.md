@@ -1,7 +1,7 @@
 # VQH API Reference
 
 
-This is an initial API documentation [Variational Quantum Harmonizer](https://github.com/iccmr-quantum/VQH/tree/v0.3_algorithm_dev)
+This is an initial API documentation of the [Variational Quantum Harmonizer](https://github.com/iccmr-quantum/VQH/tree/v0.3_algorithm_dev).
 
 This was written as a Markdown digital garden in [Obsidian](https://obsidian.md/), and then exported with [Quartz](https://quartz.jzhao.xyz/).
 
